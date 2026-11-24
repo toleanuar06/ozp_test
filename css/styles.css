@@ -121,6 +121,12 @@ code, pre, .font-mono {
   color: #ffffff;
 }
 
+.grid-cell.wrong-ans {
+  background-color: #e11d48;
+  border-color: #be123c;
+  color: #ffffff;
+}
+
 .grid-cell.flagged {
   border-color: #f59e0b;
   position: relative;

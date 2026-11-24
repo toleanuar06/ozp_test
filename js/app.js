@@ -458,28 +458,77 @@ function renderExamQuestion(index) {
   optsContainer.innerHTML = "";
 
   const selectedIdx = AppState.currentExam.userAnswers[index];
+  const showInstantFeedback = AppState.currentExam.isUntimed && selectedIdx !== undefined;
 
   q.options.forEach((optText, optIdx) => {
     const isSelected = selectedIdx === optIdx;
+    const isCorrectOpt = optIdx === q.correctIndex;
     const card = document.createElement("div");
-    card.className = `option-card p-3.5 sm:p-4 rounded-xl flex items-start gap-3 ${isSelected ? 'selected' : ''}`;
+
+    let cardClasses = `option-card p-3.5 sm:p-4 rounded-xl flex items-start gap-3 ${isSelected ? 'selected' : ''}`;
+    let badgeClasses = isSelected
+      ? 'bg-emerald-600 text-white border-emerald-600'
+      : 'bg-slate-100 text-slate-700 border-slate-200';
+    let rightStatusHtml = `
+      <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-emerald-600 bg-emerald-600' : 'border-slate-300'}">
+        ${isSelected ? '<div class="w-2 h-2 rounded-full bg-white"></div>' : ''}
+      </div>
+    `;
+    let feedbackTagHtml = '';
+
+    if (showInstantFeedback) {
+      if (isCorrectOpt) {
+        cardClasses = 'option-card p-3.5 sm:p-4 rounded-xl flex items-start gap-3 border-2 border-emerald-600 bg-emerald-50/90 shadow-sm';
+        badgeClasses = 'bg-emerald-600 text-white border-emerald-600';
+        rightStatusHtml = `<div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center"><i data-lucide="check" class="w-4 h-4"></i></div>`;
+        feedbackTagHtml = `<span class="inline-block ml-2 px-2 py-0.5 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">✓ Дұрыс жауап</span>`;
+      } else if (isSelected && !isCorrectOpt) {
+        cardClasses = 'option-card p-3.5 sm:p-4 rounded-xl flex items-start gap-3 border-2 border-rose-500 bg-rose-50/90 shadow-sm';
+        badgeClasses = 'bg-rose-600 text-white border-rose-600';
+        rightStatusHtml = `<div class="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></div>`;
+        feedbackTagHtml = `<span class="inline-block ml-2 px-2 py-0.5 rounded-md text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">✗ Қате таңдау</span>`;
+      } else {
+        cardClasses = 'option-card p-3.5 sm:p-4 rounded-xl flex items-start gap-3 opacity-75';
+      }
+    }
+
+    card.className = cardClasses;
     card.onclick = () => selectOption(optIdx);
 
     card.innerHTML = `
-      <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm border ${isSelected ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 text-slate-700 border-slate-200'}">
+      <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm border ${badgeClasses}">
         ${letters[optIdx]}
       </div>
       <div class="flex-grow pt-0.5 text-sm sm:text-base font-medium text-slate-800 select-none break-words min-w-0">
-        ${formatText(optText)}
+        ${formatText(optText)} ${feedbackTagHtml}
       </div>
       <div class="flex-shrink-0 mt-0.5">
-        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-emerald-600 bg-emerald-600' : 'border-slate-300'}">
-          ${isSelected ? '<div class="w-2 h-2 rounded-full bg-white"></div>' : ''}
-        </div>
+        ${rightStatusHtml}
       </div>
     `;
     optsContainer.appendChild(card);
   });
+
+  // In untimed mode ONLY, display instant explanation box once an option is selected
+  if (showInstantFeedback) {
+    const isUserCorrect = selectedIdx === q.correctIndex;
+    const fbBox = document.createElement("div");
+    fbBox.className = `mt-4 p-4 rounded-xl border text-xs sm:text-sm ${
+      isUserCorrect
+        ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+        : 'bg-rose-50/80 border-rose-300 text-rose-950'
+    }`;
+    fbBox.innerHTML = `
+      <div class="font-extrabold mb-1 flex items-center gap-1.5 ${isUserCorrect ? 'text-emerald-800' : 'text-rose-800'}">
+        <i data-lucide="${isUserCorrect ? 'check-circle-2' : 'alert-circle'}" class="w-4 h-4"></i>
+        <span>${isUserCorrect ? 'Жарайсыз! Жауабыңыз дұрыс.' : `Қате! Дұрыс жауап: ${letters[q.correctIndex]}) ${formatText(q.options[q.correctIndex])}`}</span>
+      </div>
+      <div class="text-slate-700 leading-relaxed mt-1">
+        <strong class="font-bold">Түсіндірме:</strong> ${formatText(q.explanation || 'Ресми ПББ стандартына сәйкес дұрыс жауап.')}
+      </div>
+    `;
+    optsContainer.appendChild(fbBox);
+  }
 
   // Navigation button states
   const btnPrev = document.getElementById("btnPrevQ");
@@ -547,7 +596,16 @@ function renderExamGrid() {
     if (isAnswered) answeredCount++;
 
     const cell = document.createElement("div");
-    cell.className = `grid-cell ${isAnswered ? 'answered' : ''} ${isCurrent ? 'active' : ''} ${isFlagged ? 'flagged' : ''}`;
+    let stateClass = "";
+    if (isAnswered) {
+      if (AppState.currentExam.isUntimed) {
+        const isCorr = AppState.currentExam.userAnswers[i] === AppState.currentExam.questions[i].correctIndex;
+        stateClass = isCorr ? "answered" : "wrong-ans";
+      } else {
+        stateClass = "answered";
+      }
+    }
+    cell.className = `grid-cell ${stateClass} ${isCurrent ? 'active' : ''} ${isFlagged ? 'flagged' : ''}`;
     cell.textContent = i + 1;
     cell.onclick = () => renderExamQuestion(i);
     grid.appendChild(cell);
@@ -623,7 +681,7 @@ function finishExam() {
   });
 
   const pct = Math.round((totalScore / totalQuestions) * 100);
-  let category = "Табалдырықтан өтпеді (<60%)";
+  let category = "Табалдырықтан өтпеді (<50%)";
   let badgeColor = "bg-rose-100 text-rose-800 border-rose-300";
 
   if (pct >= 90) {
@@ -635,8 +693,8 @@ function finishExam() {
   } else if (pct >= 70) {
     category = "Педагог-Сарапшы (70-79%)";
     badgeColor = "bg-teal-50 text-teal-800 border-teal-300";
-  } else if (pct >= 60) {
-    category = "Педагог-Модератор (60-69%)";
+  } else if (pct >= 50) {
+    category = "Педагог-Модератор (50-69%)";
     badgeColor = "bg-blue-50 text-blue-800 border-blue-300";
   }
 
@@ -656,7 +714,7 @@ function finishExam() {
   AppState.lastResult = resultData;
   saveHistory(resultData);
 
-  if (pct >= 60 && typeof confetti === 'function') {
+  if (pct >= 50 && typeof confetti === 'function') {
     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
   }
 
