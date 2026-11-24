@@ -42,45 +42,64 @@
 
   <!-- TOP NAVIGATION BAR -->
   <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
       
       <!-- Logo & Title -->
-      <div class="flex items-center gap-3 cursor-pointer" data-nav="viewHome">
-        <div class="w-10 h-10 rounded-xl bg-emerald-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+      <div class="flex items-center gap-2.5 cursor-pointer min-w-0" data-nav="viewHome">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 rounded-xl bg-emerald-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
           <i data-lucide="layers" class="w-5 h-5 text-emerald-300"></i>
         </div>
-        <div>
+        <div class="min-w-0">
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-base tracking-tight text-slate-900">ПББ Информатика</span>
-            <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300">2026 Симулятор</span>
+            <span class="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 truncate">ПББ Информатика</span>
+            <span class="hidden sm:inline-block text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300 whitespace-nowrap">2026 Симулятор</span>
           </div>
           <p class="text-xs text-slate-500 font-medium hidden sm:block">Педагогтердің білімін бағалауға дайындық</p>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
+      <!-- Desktop Navigation Tabs -->
       <nav class="hidden md:flex items-center gap-1">
-        <button data-nav="viewHome" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
+        <button data-nav="viewHome" class="nav-tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
           <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i> Басты бет
         </button>
-        <button data-nav="viewBank" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
-          <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i> Сұрақтар қоры (<span id="statTotalQuestions">1054</span>)
+        <button data-nav="viewBank" class="nav-tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
+          <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i> Сұрақтар қоры (<span id="statTotalQuestions">1009</span>)
         </button>
-        <button data-nav="viewHistory" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
+        <button data-nav="viewHistory" class="nav-tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
           <i data-lucide="history" class="w-4 h-4 text-emerald-600"></i> Тарих
         </button>
-        <button data-nav="viewRules" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
+        <button data-nav="viewRules" class="nav-tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-1.5">
           <i data-lucide="book-open" class="w-4 h-4 text-emerald-600"></i> Ереже
         </button>
       </nav>
 
-      <!-- Action Button -->
-      <div class="flex items-center gap-2">
-        <button data-nav="viewHome" class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm flex items-center gap-1.5 transition-all">
-          <i data-lucide="play" class="w-4 h-4 fill-white"></i> Тест бастау
+      <!-- Action Button & Mobile Menu Toggle -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button data-nav="viewHome" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-sm flex items-center gap-1.5 transition-all whitespace-nowrap">
+          <i data-lucide="play" class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-white"></i> Тест бастау
+        </button>
+        <button id="btnMobileMenu" aria-label="Мәзір" class="md:hidden p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100">
+          <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
       </div>
 
+    </div>
+
+    <!-- Mobile Dropdown Navigation -->
+    <div id="mobileNavMenu" class="hidden md:hidden border-t border-slate-100 bg-white px-4 py-3 space-y-1 shadow-lg">
+      <button data-nav="viewHome" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+        <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i> Басты бет
+      </button>
+      <button data-nav="viewBank" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+        <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i> Сұрақтар қоры (<span class="js-total-questions">1 009</span>)
+      </button>
+      <button data-nav="viewHistory" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+        <i data-lucide="history" class="w-4 h-4 text-emerald-600"></i> Тапсыру тарихы
+      </button>
+      <button data-nav="viewRules" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+        <i data-lucide="book-open" class="w-4 h-4 text-emerald-600"></i> Ереже және нұсқаулық
+      </button>
     </div>
   </header>
 
@@ -107,7 +126,7 @@
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             <div class="bg-white p-3 rounded-xl border border-slate-200">
               <span class="text-xs text-slate-500 font-medium block">База көлемі</span>
-              <span class="text-xl font-extrabold text-slate-900">1 054 сұрақ</span>
+              <span class="text-xl font-extrabold text-slate-900"><span class="js-total-questions">1 009</span> сұрақ</span>
             </div>
             <div class="bg-white p-3 rounded-xl border border-slate-200">
               <span class="text-xs text-slate-500 font-medium block">Тесттегі сұрақ</span>
@@ -148,6 +167,17 @@
                   <option value="0">Таймерсіз (Еркін жаттығу)</option>
                 </select>
                 <p class="text-xs text-slate-500 mt-1">Ресми емтиханда 50 сұраққа 100 минут уақыт беріледі.</p>
+              </div>
+
+              <div class="space-y-2.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                  <input type="checkbox" id="chkShuffleOptions" checked class="w-4 h-4 rounded accent-emerald-700">
+                  <span class="font-semibold text-slate-700">Жауап нұсқаларын (A, B, C, D) араластыру</span>
+                </label>
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                  <input type="checkbox" id="chkShuffleQuestions" class="w-4 h-4 rounded accent-emerald-700">
+                  <span class="font-semibold text-slate-700">Сұрақтардың тақырыптық ретін араластыру</span>
+                </label>
               </div>
 
               <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
@@ -331,9 +361,9 @@
           
           <div class="clean-card rounded-2xl p-5 bg-white border border-slate-200">
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-              <h4 class="font-bold text-slate-900 text-sm">Сұрақтар картасы (1-50)</h4>
+              <h4 class="font-bold text-slate-900 text-sm">Сұрақтар картасы</h4>
               <span class="text-xs font-mono text-slate-500">
-                <strong id="answeredCountDisplay" class="text-emerald-700 font-bold">0</strong> / 50
+                <strong id="answeredCountDisplay" class="text-emerald-700 font-bold">0</strong> / <span id="totalGridCountDisplay">50</span>
               </span>
             </div>
 
@@ -583,7 +613,7 @@
       </div>
       <h3 class="text-xl font-bold text-slate-900 mb-2">Тестті аяқтауды растайсыз ба?</h3>
       <p class="text-sm text-slate-600 mb-6 leading-relaxed">
-        Сіз 50 сұрақтың <strong id="modalAnsweredCount" class="text-emerald-700">0</strong>-іне жауап бердіңіз.<br>
+        Сіз <strong id="modalTotalCount">50</strong> сұрақтың <strong id="modalAnsweredCount" class="text-emerald-700">0</strong>-іне жауап бердіңіз.<br>
         Жауап берілмеген: <strong id="modalUnansweredCount" class="text-rose-600">50</strong> сұрақ.
       </p>
 
